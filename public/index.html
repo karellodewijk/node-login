@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Login demo</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+</head>
+<body>
+	<p><a data-action='/auth/google' href="javascript:void(0)">Google</a>
+	<p><a data-action='/auth/facebook' href="javascript:void(0)">Facebook</a>
+	<p><a data-action='/auth/twitter' href="javascript:void(0)">Twitter</a>
+	<p><a data-action='/auth/steam' href="javascript:void(0)">Steam</a>
+	<p><a data-action='/auth/vk' href="javascript:void(0)">VK</a>
+	<p><a data-action='/auth/battlenet' href="javascript:void(0)">Battle.net</a>
+	<p><a data-action='/auth/openid' id="http://eu.wargaming.net/id/" href="javascript:void(0)">Wargaming EU</a>
+	<p><a data-action='/auth/openid' id="http://ru.wargaming.net/id/" href="javascript:void(0)">Wargaming RU</a>
+	<p><a data-action='/auth/openid' id="http://asia.wargaming.net/id/" href="javascript:void(0)">Wargaming SEA</a>
+	<p><a data-action='/auth/openid' id="http://na.wargaming.net/id/" href="javascript:void(0)">Wargaming NA</a>
+	<p><a data-action='/auth/openid' id="http://kr.wargaming.net/id/" href="javascript:void(0)">Wargaming KOR</a>
+	<p><a href="/logout">logout</a></li>
+	
+	<script type="text/javascript">
+		document.addEventListener("DOMContentLoaded", function(event) { 
+			var login_options = document.getElementsByTagName('a');
+			for (var i in login_options) {
+				login_options[i].onclick = function() {
+					if (this.hasAttribute('data-action')) {
+						var f = document.createElement("form");
+						f.setAttribute('method', "POST");
+						f.setAttribute('action', this.getAttribute('data-action'));	
+						if (this.hasAttribute('id')) {
+							console.log("adding id")
+							var i = document.createElement("input");
+							i.setAttribute('type', "hidden");
+							i.setAttribute('name', "openid_identifier");
+							i.setAttribute('value', this.getAttribute('id'));
+							f.appendChild(i);
+						}
+						document.getElementsByTagName('body')[0].appendChild(f);
+						f.submit();
+					}
+				}
+			}
+		});
+	</script>
+	
+</body>
+</html>
