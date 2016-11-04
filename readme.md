@@ -5,5 +5,7 @@ This is a demo project to allow social media logins for a Node/Express website u
 getting started
 
 1) npm install
+
 2) node app.js
+
 3) surf to localhost
