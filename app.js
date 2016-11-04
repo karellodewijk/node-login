@@ -22,8 +22,8 @@ var VK_secret = ""
 
 var express = require('express')
 
-var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+var Session = require('express-session');
+var FileStore = require('session-file-store')(Session);
 var router = express.Router();
 var passport = require('passport');
 var bodyParser = require('body-parser');
@@ -32,12 +32,20 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
  
-app.use(session({
-  store: new FileStore(),
-  secret: COOKIE_SECRET,
-  resave: false,
-  saveUninitialized: true
-}));
+var sessionCache = {}
+app.use(function (req, res, next) {
+	var host = get_hostname(req);
+	if (!sessionCache[host]) {
+		sessionCache[host] = Session({
+		  store: new FileStore(),
+		  secret: COOKIE_SECRET,
+		  cookie: {domain:get_hostname(req), expires: new Date(Date.now() + 30 * 86400 * 1000)}, //30 days
+		  resave: false,
+		  saveUninitialized: true,
+		});
+	}
+	sessionCache[host](req, res, next);
+});
 
 var path = require('path');
 app.use(passport.initialize());
@@ -53,7 +61,6 @@ passport.deserializeUser(function(user, done) {
 app.use(express.static(path.join(__dirname, 'public')));
 
 function save_return(req, res, next) {
-	console.log(req.query)
 	req.session.return_to = req.headers.referer;
 	next();
 }
@@ -64,6 +71,14 @@ function redirect_return(req, res, next) {
 	//delete req.session.return_to;
 	res.status(200).send("You are logged in as: \n<pre>" + JSON.stringify(req.session.passport.user, null, '\t') + "</pre>");
 	return;
+}
+
+function get_hostname(req) {
+	var parts = req.hostname.split('.');
+	while (parts.length > 2) {
+		parts.shift();
+	}
+	return parts.join('.');
 }
 
 
@@ -161,7 +176,7 @@ if (BATTLENET_id != "") {
 	  return { state: options.redirectUrl };
 	};
 	
-	router.post('/auth/battlenet', save_return, function(req,res,next) { passport.authenticate('battlenet', { redirectUrl:'http://' + req.hostname + '/auth/battlenet/callback' })(req, res, next); } );
+	router.post('/auth/battlenet', save_return, function(req,res,next) { passport.authenticate('battlenet', { redirectUrl:'http://' + get_hostname(req) + '/auth/battlenet/callback' })(req, res, next); } );
 	router.get('/auth/battlenet/callback', passport.authenticate('battlenet'), redirect_return);
 }
 
@@ -171,10 +186,10 @@ if (STEAM_API_key != "") {
 	var steam = new SteamWebAPI({ apiKey: STEAM_API_key, format: 'json' });
 	passport.use('steam', new OpenIDStrategy({
 			returnURL: function(req) { 
-				return "http://" + req.hostname + "/auth/steam/callback/";
+				return "http://" + get_hostname(req) + "/auth/steam/callback/";
 			},
 			realm: function(req) { 
-				return "http://" + req.hostname; 
+				return "http://" + get_hostname(req); 
 			},
 			provider: 'steam',
 			name:'steam',
@@ -203,7 +218,7 @@ if (STEAM_API_key != "") {
 OpenIDStrategy = require('passport-openid').Strategy;
 passport.use('openid', new OpenIDStrategy({
 		returnURL: function(req) { 
-			return 'http://'+req.hostname+"/auth/openid/callback";
+			return 'http://'+get_hostname(req)+"/auth/openid/callback";
 		},
 		passReqToCallback: true,
 		stateless: true
