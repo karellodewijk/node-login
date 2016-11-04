@@ -96,7 +96,7 @@ if (GOOGLE_id != "") {
 	  }
 	));
 
-	router.post('/auth/google', save_return, passport.authenticate('google'));
+	router.post('/auth/google', save_return, function(req,res,next) { passport.authenticate('google', { callbackURL: 'http://' + get_hostname(req) + '/auth/google/callback' })(req, res, next); } );
 	router.get('/auth/google/callback', passport.authenticate('google'), redirect_return);
 }
 
@@ -115,7 +115,7 @@ if (FACEBOOK_id != "") {
 	));
 	
 	//facebook
-	router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
+	router.post('/auth/facebook', save_return, function(req,res,next) { passport.authenticate('facebook', { callbackURL: 'http://' + get_hostname(req) + '/auth/facebook/callback' })(req, res, next); } );
 	router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
 }
 
@@ -134,7 +134,7 @@ if (TWITTER_id != "") {
 	));	
 	
 	//twitter
-	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
+	router.post('/auth/twitter', save_return, function(req,res,next) { passport.authenticate('twitter', { callbackURL: 'http://' + get_hostname(req) + '/auth/twitter/callback' })(req, res, next); } );
 	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
 }
 
@@ -153,7 +153,7 @@ if (VK_id != "") {
 	));
 	
 	//vk
-	router.post('/auth/vk', save_return, passport.authenticate('vk'));
+	router.post('/auth/vk', save_return, function(req,res,next) { passport.authenticate('vk', { callbackURL: 'http://' + get_hostname(req) + '/auth/vk/callback' })(req, res, next); } );
 	router.get('/auth/vk/callback', passport.authenticate('vk'), redirect_return);
 }
 
@@ -223,7 +223,6 @@ passport.use('openid', new OpenIDStrategy({
 		stateless: true
 	},
 	function(req, identifier, done) {
-		console.log("Do i get here")
 		var user = {};
 		user.server = identifier.split('://')[1].split(".wargaming")[0];
 		user.identity_provider = "wargaming";
@@ -237,6 +236,12 @@ passport.use('openid', new OpenIDStrategy({
 //openid
 router.post('/auth/openid', save_return, passport.authenticate('openid'));
 router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
+
+router.get('/logout', function(req, res) {
+  var return_to = req.headers.referer;
+  req.logout();
+  res.redirect(return_to);
+});
 
 //add router to app
 app.use('/', router);	
