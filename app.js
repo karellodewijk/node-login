@@ -1,21 +1,24 @@
+//For social media login to work you will need to register your website at the different authorization servers.
+//And then fill in the nescessery ids/secrets/keys
+
 var COOKIE_SECRET = 'some random string'
 
-var FACEBOOK_id = "580177672120479"
-var FACEBOOK_secret = "eba898e021a070a00f60e0343450695e"
+var FACEBOOK_id = ""
+var FACEBOOK_secret = ""
 
-var GOOGLE_id = "544895630420-h9bbrnn1ndmf005on55qapanrqdidt5e.apps.googleusercontent.com"
-var GOOGLE_secret = "8jTj6l34XcZ8y_pU2cqwANjw"
+var GOOGLE_id = ""
+var GOOGLE_secret = ""
 
-var TWITTER_id = "kyuE5HUWJipJpz1JraWrGKu0Z"
-var TWITTER_secret = "qruzs2fwJG8nVMzPeFSvxWZ2ua6WzkJNpBhI5yPCSS525ivTSI"
+var TWITTER_id = ""
+var TWITTER_secret = ""
 
-var STEAM_API_key = "CB4C80AA4F5D21D96DD11B448060FAEA"
+var STEAM_API_key = ""
 
-var BATTLENET_id = "3vscdb9zdkma9rfe5zegzda967guvme3"
-var BATTLENET_secret = "Rxvde4U6ETRKDbAWtJ4RmKnJcbAmNnrt"
+var BATTLENET_id = ""
+var BATTLENET_secret = ""
 
-var VK_id = "5461343"
-var VK_secret = "wwVRAUVa5nQjLGFy2fcH"
+var VK_id = ""
+var VK_secret = ""
 
 var express = require('express')
 
