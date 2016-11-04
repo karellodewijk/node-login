@@ -31,7 +31,15 @@ var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
- 
+
+function get_hostname(req) {
+	var parts = req.hostname.split('.');
+	while (parts.length > 2) {
+		parts.shift();
+	}
+	return parts.join('.');
+}
+
 var sessionCache = {}
 app.use(function (req, res, next) {
 	var host = get_hostname(req);
@@ -72,15 +80,6 @@ function redirect_return(req, res, next) {
 	res.status(200).send("You are logged in as: \n<pre>" + JSON.stringify(req.session.passport.user, null, '\t') + "</pre>");
 	return;
 }
-
-function get_hostname(req) {
-	var parts = req.hostname.split('.');
-	while (parts.length > 2) {
-		parts.shift();
-	}
-	return parts.join('.');
-}
-
 
 if (GOOGLE_id != "") {
 	StrategyGoogle = require('passport-google-oauth2').Strategy;
